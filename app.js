@@ -74,10 +74,10 @@ app.post("/signUp", async (req, res) => {
     const superAdminExists = await (
       await pool.connect()
     ).query(`SELECT * FROM users WHERE email = '${email}'`);
-    console.log(superAdminExists.rows, email);
+    console.log("====>", superAdminExists.rows, email);
 
     if (superAdminExists.rows.length > 0) {
-      throw new Error("superAdmin already esists!");
+      throw new Error("superAdmin already exists!");
     }
     if (superAdminExists.rows.length < 1) {
       const name = req.body.name;
@@ -107,7 +107,7 @@ app.post("/signUp", async (req, res) => {
   }
 });
 
-app.post("/super-admin-token", async (req, res) => {
+app.post("/super-admin-login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -132,7 +132,7 @@ app.post("/super-admin-token", async (req, res) => {
         res.send({
           status: "SUCCESS",
           data: superAdminToken,
-          message: "superAdmin token generated successfully!",
+          message: "superAdmin login and token obtained successfully!",
         });
       } else {
         throw new Error("Incorrect PassWord!");
@@ -194,9 +194,7 @@ app.post("/create-roles", authenticateUser, async (req, res) => {
 
     const sql = `INSERT INTO users (userid,role,name,email,password,active) VALUES ('${userId}','${role}','${name}','${email}','${passWord}','${active}')`;
 
-    pool.query(sql, (err, res) => {
-      console.log(err, res);
-    });
+    pool.query(sql, (err, res) => {});
     res.send({
       status: "SUCCESS",
       data: user,
@@ -249,6 +247,7 @@ app.delete("/delete", authenticateUser, async (req, res) => {
 });
 app.listen(3000, async () => {
   await pool.connect();
+  console.log("db connected!");
   // pool.query(
   //   "CREATE TABLE users (userid VARCHAR PRIMARY KEY, role VARCHAR , name VARCHAR , email VARCHAR , password VARCHAR, active BOOLEAN)",
   //   (err, res) => {
